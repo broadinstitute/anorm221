@@ -4,7 +4,7 @@ organization := "org.broadinstitute.gpp"
 
 version := "2.2.1"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.6"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
