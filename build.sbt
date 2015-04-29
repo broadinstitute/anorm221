@@ -2,7 +2,7 @@ name := "anorm221"
 
 organization := "org.broadinstitute.gpp"
 
-version := "2.2.1"
+version := "2.2.1.1"
 
 scalaVersion := "2.11.6"
 
