@@ -326,6 +326,7 @@ object ToStatement {
     private def setAny(index: Int, value: Any, stmt: java.sql.PreparedStatement): java.sql.PreparedStatement = {
       value match {
         case Some(bd: java.math.BigDecimal) => stmt.setBigDecimal(index, bd)
+        case Some(date: java.util.Date) => stmt.setTimestamp(index, new java.sql.Timestamp(date.getTime()))
         case Some(o) => stmt.setObject(index, o)
         case None => stmt.setObject(index, null)
         case bd: java.math.BigDecimal => stmt.setBigDecimal(index, bd)
