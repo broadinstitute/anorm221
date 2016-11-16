@@ -2,9 +2,9 @@ name := "anorm221"
 
 organization := "org.broadinstitute.gpp"
 
-version := "2.2.1.1"
+version := "2.2.1.2"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
@@ -31,13 +31,13 @@ mappings in (Compile,packageBin) ~= { (ms: Seq[(File, String)]) =>
   }
 }
 
-// Configure publishing to the RNAi Nexus repository
-publishTo <<= version { (v: String) =>
-  val nexus = "http://rnaivm3.broadinstitute.org:10080/nexus/"
-  if (v.trim.endsWith("SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots/")
+// Configure publishing to the nexus repository
+publishTo in ThisBuild := {
+  val nexus = "http://gppops1.broadinstitute.org:8081/repository/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "maven-snapshots")
   else
-    Some("releases" at nexus + "content/repositories/releases")
+    Some("releases" at nexus + "maven-releases")
 }
 
 // Look up Nexus credentials from the user's .ivy2 directory
