@@ -2,11 +2,11 @@ name := "anorm221"
 
 organization := "org.broadinstitute.gpp"
 
-version := "2.2.1.3"
+version := "2.2.1.4"
 
-scalaVersion := "2.12.0"
+scalaVersion := "2.12.8"
 
-crossScalaVersions := Seq("2.11.8", "2.12.0")
+crossScalaVersions := Seq("2.12.8", "2.13.0")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
@@ -15,8 +15,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 //--------------------------------------------------------------------------------------------------
 
 libraryDependencies ++= Seq()
-libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _)
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
+libraryDependencies += scalaVersion("org.scala-lang" % "scala-compiler" % _).value
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 
 //--------------------------------------------------------------------------------------------------
 // Tell sbt that we want to see stack traces automatically

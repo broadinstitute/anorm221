@@ -16,7 +16,7 @@ package object anorm221 {
   implicit def sqlToSimple(sql: SqlQuery): SimpleSql[Row] = sql.asSimple
   implicit def sqlToBatch(sql: SqlQuery): BatchSql = sql.asBatch
 
-  implicit def implicitID[ID](id: Id[ID] with NotNull): ID = id.id
+  implicit def implicitID[ID](id: Id[ID]): ID = id.id
 
   implicit def toParameterValue[A](a: A)(implicit p: ToStatement[A]): ParameterValue[A] =
     ParameterValue(a, p)
