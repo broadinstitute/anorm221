@@ -53,7 +53,7 @@ object SqlParser {
 
   def contains[TT: Column, T <: TT](columnName: String, t: T): RowParser[Unit] =
     get[TT](columnName)(implicitly[Column[TT]])
-      .collect("Row doesn't contain a column: " + columnName + " with value " + t) { case a if a == t => Unit }
+      .collect("Row doesn't contain a column: " + columnName + " with value " + t) { case a if a == t => () }
 
 }
 
