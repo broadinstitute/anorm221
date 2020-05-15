@@ -298,7 +298,7 @@ object Useful {
 
   case class Var[T](var content: T)
 
-  def drop[A](these: Var[Stream[A]], n: Int): Stream[A] = {
+  def drop[A](these: Var[LazyList[A]], n: Int): LazyList[A] = {
     var count = n
     while (!these.content.isEmpty && count > 0) {
       these.content = these.content.tail
@@ -307,14 +307,14 @@ object Useful {
     these.content
   }
 
-  def unfold1[T, R](init: T)(f: T => Option[(R, T)]): (Stream[R], T) = f(init) match {
-    case None => (Stream.Empty, init)
-    case Some((r, v)) => (Stream.cons(r, unfold(v)(f)), v)
+  def unfold1[T, R](init: T)(f: T => Option[(R, T)]): (LazyList[R], T) = f(init) match {
+    case None => (LazyList.empty, init)
+    case Some((r, v)) => (LazyList.cons(r, unfold(v)(f)), v)
   }
 
-  def unfold[T, R](init: T)(f: T => Option[(R, T)]): Stream[R] = f(init) match {
-    case None => Stream.Empty
-    case Some((r, v)) => Stream.cons(r, unfold(v)(f))
+  def unfold[T, R](init: T)(f: T => Option[(R, T)]): LazyList[R] = f(init) match {
+    case None => LazyList.empty
+    case Some((r, v)) => LazyList.cons(r, unfold(v)(f))
   }
 
 }
@@ -408,10 +408,10 @@ case class SimpleSql[T](sql: SqlQuery, params: Seq[(String, ParameterValue[_])],
 case class BatchSql(sql: SqlQuery, params: Seq[Seq[(String, ParameterValue[_])]]) {
 
   def addBatch(args: (String, ParameterValue[_])*): BatchSql = this.copy(params = (this.params) :+ args)
-  def addBatchList(paramsMapList: TraversableOnce[Seq[(String, ParameterValue[_])]]): BatchSql = this.copy(params = (this.params) ++ paramsMapList)
+  def addBatchList(paramsMapList: IterableOnce[Seq[(String, ParameterValue[_])]]): BatchSql = this.copy(params = (this.params) ++ paramsMapList)
 
   def addBatchParams(args: ParameterValue[_]*): BatchSql = this.copy(params = (this.params) :+ sql.argsInitialOrder.zip(args))
-  def addBatchParamsList(paramsSeqList: TraversableOnce[Seq[ParameterValue[_]]]): BatchSql = this.copy(params = (this.params) ++ paramsSeqList.map(paramsSeq => sql.argsInitialOrder.zip(paramsSeq)))
+  def addBatchParamsList(paramsSeqList: IterableOnce[Seq[ParameterValue[_]]]): BatchSql = this.copy(params = (this.params) ++ paramsSeqList.iterator.map(paramsSeq => sql.argsInitialOrder.zip(paramsSeq)))
 
   def getFilledStatement(connection: java.sql.Connection, getGeneratedKeys: Boolean = false) = {
     val statement = if (getGeneratedKeys) connection.prepareStatement(sql.query, java.sql.Statement.RETURN_GENERATED_KEYS)
@@ -523,7 +523,7 @@ object Sql {
         clazz = meta.getColumnClassName(i))))
   }
 
-  def resultSetToStream(rs: java.sql.ResultSet): Stream[SqlRow] = {
+  def resultSetToStream(rs: java.sql.ResultSet): LazyList[SqlRow] = {
     val rsMetaData = metaData(rs)
     val columns = List.range(1, rsMetaData.columnCount + 1)
     def data(rs: java.sql.ResultSet) = columns.map(nb => rs.getObject(nb))
