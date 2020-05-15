@@ -2,11 +2,11 @@ name := "anorm221"
 
 organization := "org.broadinstitute.gpp"
 
-version := "2.2.1.4"
+version := "2.2.1.5"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.2"
 
-crossScalaVersions := Seq("2.12.8", "2.13.0")
+crossScalaVersions := Seq("2.13.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
@@ -29,7 +29,7 @@ traceLevel in run := 0
 //--------------------------------------------------------------------------------------------------
 
 mappings in (Compile,packageBin) ~= { (ms: Seq[(File, String)]) =>
-  ms filter { case (file, toPath) =>
+  ms filter { case (file, _) =>
     file.getName != "logback.xml"
   }
 }
@@ -38,9 +38,9 @@ mappings in (Compile,packageBin) ~= { (ms: Seq[(File, String)]) =>
 publishTo in ThisBuild := {
   val nexus = "http://gppops1.broadinstitute.org:8081/repository/"
   if (isSnapshot.value)
-    Some("snapshots" at nexus + "maven-snapshots")
+    Some(("snapshots" at nexus + "maven-snapshots").withAllowInsecureProtocol(true))
   else
-    Some("releases" at nexus + "maven-releases")
+    Some(("releases" at nexus + "maven-releases").withAllowInsecureProtocol(true))
 }
 
 // Look up Nexus credentials from the user's .ivy2 directory

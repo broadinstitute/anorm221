@@ -1,12 +1,13 @@
 package anorm221
 
 import SqlParser.ResultSet
+import scala.collection.immutable.LazyList.#::
 
 object SqlParser {
   import MayErr._
   import java.util.Date
 
-  type ResultSet = Stream[Row]
+  type ResultSet = LazyList[Row]
 
   def scalar[T](implicit transformer: Column[T]): RowParser[T] = RowParser[T] { row =>
 
@@ -159,7 +160,7 @@ object ResultSetParser {
     // result set to a List.  Prepending is O(1), so we use prepend, and then reverse the result
     // in the map function below.
     @scala.annotation.tailrec
-    def sequence(results: SqlResult[List[A]], rows: Stream[Row]): SqlResult[List[A]] = {
+    def sequence(results: SqlResult[List[A]], rows: LazyList[Row]): SqlResult[List[A]] = {
 
       (results, rows) match {
 
@@ -177,15 +178,15 @@ object ResultSetParser {
   def nonEmptyList[A](p: RowParser[A]): ResultSetParser[List[A]] = ResultSetParser(rows => if (rows.isEmpty) Error(SqlMappingError("Empty Result Set")) else list(p)(rows))
 
   def single[A](p: RowParser[A]): ResultSetParser[A] = ResultSetParser {
-    case head #:: Stream.Empty => p(head)
-    case Stream.Empty => Error(SqlMappingError("No rows when expecting a single one"))
+    case head #:: tail if tail.isEmpty => p(head)
+    case LazyList() => Error(SqlMappingError("No rows when expecting a single one"))
     case _ => Error(SqlMappingError("too many rows when expecting a single one"))
 
   }
 
   def singleOpt[A](p: RowParser[A]): ResultSetParser[Option[A]] = ResultSetParser {
-    case head #:: Stream.Empty => p.map(Some(_))(head)
-    case Stream.Empty => Success(None)
+    case head #:: tail if tail.isEmpty => p.map(Some(_))(head)
+    case LazyList() => Success(None)
     case _ => Error(SqlMappingError("too many rows when expecting a single one"))
   }
 
