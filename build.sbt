@@ -2,11 +2,11 @@ name := "anorm221"
 
 organization := "org.broadinstitute.gpp"
 
-version := "2.2.1.5"
+version := "2.2.1.6"
 
-scalaVersion := "2.13.2"
+scalaVersion := "2.13.4"
 
-crossScalaVersions := Seq("2.13.2")
+crossScalaVersions := Seq("2.13.4")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
@@ -34,18 +34,11 @@ mappings in (Compile,packageBin) ~= { (ms: Seq[(File, String)]) =>
   }
 }
 
-// Configure publishing to the nexus repository
-publishTo in ThisBuild := {
-  val nexus = "http://gppops1.broadinstitute.org:8081/repository/"
-  if (isSnapshot.value)
-    Some(("snapshots" at nexus + "maven-snapshots").withAllowInsecureProtocol(true))
-  else
-    Some(("releases" at nexus + "maven-releases").withAllowInsecureProtocol(true))
-}
-
-// Look up Nexus credentials from the user's .ivy2 directory
-// For details on the contents of this file, see http://goo.gl/aYtqJ
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
+// Configure publishing to GitHub Packages:
+githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") ||
+                     TokenSource.GitConfig("github.token")
+githubOwner := "broadinstitute"
+githubRepository := "anorm221"
 
 // Disable parallel execution of tests (can cause problems with integration tests)
 parallelExecution in Test := false
