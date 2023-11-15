@@ -33,7 +33,11 @@ links/
 /links/
 /scaladoc/
 /.worksheet/
-
+metals.sbt
+.bloop
+.bsp
+.metals
+.vscode
 #------------------------------------------------------------------------------
 # Project-specific ignores go below this line.
 #------------------------------------------------------------------------------
