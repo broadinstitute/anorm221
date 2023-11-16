@@ -1,44 +1,38 @@
 name := "anorm221"
 
-organization := "org.broadinstitute.gpp"
+val scala213 = "2.13.12"
+val scala3 = "3.3.1"
 
-version := "2.2.1.6"
+ThisBuild / scalaVersion := scala213
+ThisBuild / organization := "org.broadinstitute.gpp"
+ThisBuild / versionScheme := Some("early-semver")
 
-scalaVersion := "2.13.4"
+githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
 
-crossScalaVersions := Seq("2.13.4")
+version := "2.2.1.7"
+
+scalaVersion := scala213
+crossScalaVersions := Seq(scala213, scala3)
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
-
+scalacOptions ++=
+    (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => Seq("-source:3.0-migration", "-explain")
+      case _ => Seq.empty
+    })
 //--------------------------------------------------------------------------------------------------
 // The libraries that we depend on:
 //--------------------------------------------------------------------------------------------------
 
 libraryDependencies ++= Seq()
-libraryDependencies += scalaVersion("org.scala-lang" % "scala-compiler" % _).value
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
+//libraryDependencies += scalaVersion("org.scala-lang" % "scala-compiler" % _).value
+libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.3.0"
 
-//--------------------------------------------------------------------------------------------------
-// Tell sbt that we want to see stack traces automatically
-//--------------------------------------------------------------------------------------------------
-
-traceLevel in run := 0
-
-//--------------------------------------------------------------------------------------------------
-// Don't publish a logback.xml
-//--------------------------------------------------------------------------------------------------
-
-mappings in (Compile,packageBin) ~= { (ms: Seq[(File, String)]) =>
-  ms filter { case (file, _) =>
-    file.getName != "logback.xml"
-  }
-}
 
 // Configure publishing to GitHub Packages:
-githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") ||
-                     TokenSource.GitConfig("github.token")
+githubTokenSource := TokenSource.GitConfig("github.token")
 githubOwner := "broadinstitute"
 githubRepository := "anorm221"
 
 // Disable parallel execution of tests (can cause problems with integration tests)
-parallelExecution in Test := false
+Test / parallelExecution := false

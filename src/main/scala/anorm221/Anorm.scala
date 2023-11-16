@@ -2,6 +2,7 @@ package anorm221
 
 import scala.language.{ postfixOps, reflectiveCalls }
 
+
 import MayErr._
 import java.util.Date
 import collection.TraversableOnce
@@ -322,7 +323,7 @@ object Useful {
 trait ToStatement[A] { def set(s: java.sql.PreparedStatement, index: Int, aValue: A): Unit }
 object ToStatement {
 
-  implicit def anyParameter[T] = new ToStatement[T] {
+  implicit def anyParameter[T]: ToStatement[T] = new ToStatement[T] {
     private def setAny(index: Int, value: Any, stmt: java.sql.PreparedStatement): java.sql.PreparedStatement = {
       value match {
         case Some(bd: java.math.BigDecimal) => stmt.setBigDecimal(index, bd)
@@ -341,7 +342,7 @@ object ToStatement {
     def set(s: java.sql.PreparedStatement, index: Int, aValue: T): Unit = setAny(index, aValue, s)
   }
 
-  implicit val dateToStatement = new ToStatement[java.util.Date] {
+  implicit val dateToStatement: ToStatement[java.util.Date] = new ToStatement[java.util.Date] {
     def set(s: java.sql.PreparedStatement, index: Int, aValue: java.util.Date): Unit = s.setTimestamp(index, new java.sql.Timestamp(aValue.getTime()))
 
   }
@@ -379,7 +380,7 @@ case class SimpleSql[T](sql: SqlQuery, params: Seq[(String, ParameterValue[_])],
 
   def onParams(args: ParameterValue[_]*): SimpleSql[T] = this.copy(params = (this.params) ++ sql.argsInitialOrder.zip(args))
 
-  def list()(implicit connection: java.sql.Connection): Seq[T] = as(defaultParser*)
+  def list()(implicit connection: java.sql.Connection): Seq[T] = as((defaultParser*))
 
   def single()(implicit connection: java.sql.Connection): T = as(ResultSetParser.single(defaultParser))
 
@@ -455,7 +456,7 @@ trait Sql {
 
   def as[T](parser: ResultSetParser[T])(implicit connection: java.sql.Connection): T = Sql.as[T](parser, resultSet())
 
-  def list[A](rowParser: RowParser[A])(implicit connection: java.sql.Connection): Seq[A] = as(rowParser *)
+  def list[A](rowParser: RowParser[A])(implicit connection: java.sql.Connection): Seq[A] = as((rowParser *))
 
   def single[A](rowParser: RowParser[A])(implicit connection: java.sql.Connection): A = as(ResultSetParser.single(rowParser))
 
