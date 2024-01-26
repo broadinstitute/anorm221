@@ -9,7 +9,7 @@ ThisBuild / versionScheme := Some("early-semver")
 
 githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
 
-version := "2.2.1.7"
+version := "2.2.1.8"
 
 scalaVersion := scala213
 crossScalaVersions := Seq(scala213, scala3)
@@ -24,10 +24,11 @@ scalacOptions ++=
 // The libraries that we depend on:
 //--------------------------------------------------------------------------------------------------
 
-libraryDependencies ++= Seq()
-//libraryDependencies += scalaVersion("org.scala-lang" % "scala-compiler" % _).value
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.3.0"
-
+libraryDependencies +=
+  (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((3, _)) => "org.scala-lang.modules" %% "scala-parser-combinators" % "2.3.0"
+      case _ =>"org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
+  })
 
 // Configure publishing to GitHub Packages:
 githubTokenSource := TokenSource.GitConfig("github.token")
