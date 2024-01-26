@@ -35,5 +35,5 @@ githubTokenSource := TokenSource.GitConfig("github.token")
 githubOwner := "broadinstitute"
 githubRepository := "anorm221"
 
-// Disable parallel execution of tests (can cause problems with integration tesst)
+// Disable parallel execution of tests (can cause problems with integration tests)
 Test / parallelExecution := false
