@@ -61,6 +61,8 @@ object GithubPackages extends AutoPlugin {
       }
     },
     publishTo := {
+      def suppressMissingConfigWarning = (publish / skip).value
+
       val back = for {
         owner <- githubOwner.?.value.filter(_.nonEmpty)
         repo <- githubRepository.?.value.filter(_.nonEmpty)
@@ -74,7 +76,10 @@ object GithubPackages extends AutoPlugin {
       }
 
       back.orElse {
-        sLog.value.warn("GithubPackages: `githubOwner`/`githubRepository` not set; leaving publishTo unchanged")
+        if (!suppressMissingConfigWarning)
+          sLog.value.warn(
+            "GithubPackages: `githubOwner`/`githubRepository` not set; leaving publishTo unchanged"
+          )
         publishTo.value
       }
     }
