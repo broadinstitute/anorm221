@@ -7,8 +7,6 @@ ThisBuild / scalaVersion := scala213
 ThisBuild / organization := "org.broadinstitute.gpp"
 ThisBuild / versionScheme := Some("early-semver")
 
-githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
-
 version := "2.2.1.8"
 
 scalaVersion := scala213
@@ -31,8 +29,7 @@ libraryDependencies +=
   })
 
 // Configure publishing to GitHub Packages:
-githubTokenSource := TokenSource.GitConfig("github.token")
-githubOwner := "broadinstitute"
+ThisBuild / githubOwner := "broadinstitute"
 githubRepository := "anorm221"
 
 // Disable parallel execution of tests (can cause problems with integration tests)
